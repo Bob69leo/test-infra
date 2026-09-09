@@ -71,10 +71,10 @@ presubmits:
         - wrapper.sh
         - bash
         - -c
-        - curl -sSL https://kind.sigs.k8s.io/dl/latest/linux-amd64.tgz | tar xvfz - -C "${PATH%%:*}/" && e2e-k8s.sh
+        - curl -sSLO https://raw.githubusercontent.com/kubernetes/test-infra/refs/heads/master/hack/ci/test-infra-e2e.sh && chmod u+x test-infra-e2e.sh && curl -sSL https://kind.sigs.k8s.io/dl/latest/linux-amd64.tgz | tar xvfz - -C "${PATH%%:*}/" && ./test-infra-e2e-k8s.sh
         env:
         - name: LABEL_FILTER
-          value: "Feature: isEmpty && !Slow && !Disruptive && !Flaky"
+          value: "Feature: isEmpty && !Slow && !Disruptive && !Flaky && !Serial"
         - name: PARALLEL
           value: "true"
         # we need privileged mode in order to do docker in docker
@@ -684,7 +684,7 @@ presubmits:
         # Normally control plane components are linked statically, which does not work with -race (needs CGO).
         # We need to override the default for components of interest.
         - name: KUBE_CGO_OVERRIDES
-          value: kube-apiserver kube-controller-manager kube-scheduler
+          value: kube-apiserver kube-controller-manager kube-scheduler kubelet
         # we need privileged mode in order to do docker in docker
         securityContext:
           privileged: true
